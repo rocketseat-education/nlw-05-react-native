@@ -53,66 +53,26 @@ export function PlantEdit() {
     },[]);
 
 
-    const handleUpdate = useCallback(async () => {  
-      const { times, repeat_every } = plant.frequency; 
-      const nextMoment = selectedDateTime;
-
-      if(repeat_every === 'week'){
-        const interval = Math.trunc(7 / times);        
-        nextMoment.setDate(nextMoment.getDate() + interval)
-      }
-      // else
-      //   nextMoment.setDate(nextMoment.getDate() + 1)        
-
+    const handleUpdate = useCallback(async () => {        
       try {        
         const data = await AsyncStorage.getItem('@plantmanager:plants');
         const plants = data 
         ? JSON.parse(data) as StoragePlants
         : {};
 
-        const newPlant = {
-            name: plant.name,
-            photo: plant.photo,
-            dateTimeNofication: selectedDateTime,
-            frequency: plant.frequency            
-        }
+        const newTime = new Date(plants[plant.id].dateTimeNofication);
+        newTime.setHours(selectedDateTime.getHours());
+        newTime.setMinutes(selectedDateTime.getMinutes());
+        plants[plant.id].dateTimeNofication = newTime;
 
-        // Cria a notificação.
-        const notificationId = await Notifications.scheduleNotificationAsync({          
-          content: {
-            title: `Heeey, 🌱`,            
-            body: `Está na hora de cuidar da sua ${plant.name}.`,
-            sound: true,
-            priority: Notifications.AndroidNotificationPriority.HIGH,            
-            data: { plant:  {
-                id: plant.id,
-                ...newPlant
-              } 
-            }
-          },
-          trigger: {
-            day: nextMoment.getDate(),
-            month: nextMoment.getMonth() + 1,
-            year: nextMoment.getFullYear(),
-            hour: nextMoment.getHours(),
-            minute: nextMoment.getMinutes(),
-          },
-        });
         
-        const storagePlant = {[plant.id]: {...newPlant, notificationId}};        
-
-        await AsyncStorage.setItem('@plantmanager:plants', JSON.stringify({...plants, ...storagePlant}));
-        navigation.navigate('Confirmation', {
-          title: 'Tudo certo',
-          subtitle: 'Fique tranquilo que sempre vamos lembrar você de cuidar da sua plantinha com bastante amor.',
-          buttonTitle: 'Muito obrigado :D',
-          icon: 'hug',
-          nextScreen: 'MyPlants'
-        });
-
+        plants[plant.id].dateTimeNofication = newTime;
+        await AsyncStorage.setItem('@plantmanager:plants', JSON.stringify(plants));
+        navigation.navigate('MyPlants');
+        
       } catch (error) {
         console.error(error)
-        Alert.alert('Não foi possível cadastrar sua plantinha. 😢')
+        Alert.alert('Não foi possível atualizar sua plantinha. 😢')
       }      
     },[selectedDateTime]);
 
@@ -132,6 +92,19 @@ export function PlantEdit() {
         Alert.alert('Não foi possível remover.');
       }
     };
+
+    useEffect(() => {
+      async function loadData(){
+        const data = await AsyncStorage.getItem('@plantmanager:plants');
+        const plants = data 
+        ? JSON.parse(data) as StoragePlants
+        : {};
+
+        setSelectedDateTime(new Date(plants[plant.id].dateTimeNofication));
+      }
+
+      loadData();
+    },[]);
 
     return (
         <SafeAreaView style={styles.container}> 

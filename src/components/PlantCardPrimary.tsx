@@ -6,16 +6,17 @@ import img from '../assets/plants/aningapara.png'
 
 interface PlantProps extends TouchableOpacityProps{
     data: {
-        name: string
+        name: string;
     }
 }
 
-export const PlantCardPrimary = ({ data, ...rest }: PlantProps) => (
+export const PlantCardPrimary = ({ data, ...rest }: PlantProps) => {
+    return(
     <TouchableOpacity style={styles.container} {...rest}> 
         <Image source={img} style={styles.image} />
         <Text style={styles.text}>{data.name}</Text>
     </TouchableOpacity>
-  );
+  )};
 
 const styles = StyleSheet.create({
     container: {

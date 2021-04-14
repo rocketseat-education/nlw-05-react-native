@@ -147,7 +147,8 @@ const styles = StyleSheet.create({
   },
   environmentList: {    
     width: "100%",
-    justifyContent: 'center',    
+    justifyContent: 'center',   
+    paddingBottom: 5 
   }, 
   columnWrapperStyle: {
     justifyContent: "space-between",

@@ -22,7 +22,7 @@ interface Params {
   plant: PlantData
 }
 
-interface StoragePlants {
+export interface StoragePlants {
   [id: string]: {
     name: string;
     photo: string;
