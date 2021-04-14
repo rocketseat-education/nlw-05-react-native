@@ -2,8 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/core';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, FlatList, SafeAreaView, Text, View} from 'react-native';
-import { RectButton } from 'react-native-gesture-handler';
-import { color } from 'react-native-reanimated';
 import { EnvironmentButton } from '../components/EnvironmentButton';
 import { Header } from '../components/Header';
 import { Load } from '../components/Load';
@@ -109,7 +107,12 @@ export function PlantNew() {
 
       <FlatList 
         data={plants} 
-        renderItem={({ item }) => <PlantCardPrimary title={item.name} onPress={() => handleSelectPlant(item)} />}
+        renderItem={({ item }) => (
+          <PlantCardPrimary 
+            data={ item } 
+            onPress={() => handleSelectPlant(item)} />
+            )
+          }
         keyExtractor={item => item.id}
         numColumns={2}
         columnWrapperStyle={styles.columnWrapperStyle}

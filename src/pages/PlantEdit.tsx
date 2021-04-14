@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/core';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { 
   Alert, 
   StyleSheet, 
@@ -17,6 +17,7 @@ import img from '../assets/plants/imbe.png';
 import waterdrop from '../assets/waterdrop.png';
 import colors from '../styles/colors';
 import { PlantData } from './PlantNew';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 interface Params {
   plant: PlantData
@@ -36,7 +37,7 @@ interface StoragePlants {
 }
 
 
-export function PlantSave() {   
+export function PlantEdit() {   
     const [selectedDateTime, setSelectedDateTime] = useState(new Date); 
 
     const navigation = useNavigation();
@@ -51,7 +52,8 @@ export function PlantSave() {
       }
     },[]);
 
-    const handleConfirm = useCallback(async () => {  
+
+    const handleUpdate = useCallback(async () => {  
       const { times, repeat_every } = plant.frequency; 
       const nextMoment = selectedDateTime;
 
@@ -71,8 +73,6 @@ export function PlantSave() {
         const newPlant = {
             name: plant.name,
             photo: plant.photo,
-            about: plant.about,
-            water_tips: plant.water_tips,
             dateTimeNofication: selectedDateTime,
             frequency: plant.frequency            
         }
@@ -116,8 +116,29 @@ export function PlantSave() {
       }      
     },[selectedDateTime]);
 
+    async function handleRemove(){
+      try {
+        const data = await AsyncStorage.getItem('@plantmanager:plants');
+        const plants = data 
+        ? JSON.parse(data) as StoragePlants
+        : {};
+
+        await Notifications.cancelScheduledNotificationAsync(plants[plant.id].notificationId);
+        delete plants[plant.id];
+        await AsyncStorage.setItem('@plantmanager:plants', JSON.stringify(plants));
+
+        navigation.navigate('MyPlants');
+      } catch (error) {
+        Alert.alert('Não foi possível remover.');
+      }
+    };
+
     return (
         <SafeAreaView style={styles.container}> 
+          <TouchableOpacity style={styles.removeButton} onPress={handleRemove}>
+            <Text style={styles.removeButtonLabel}>Remover</Text>
+          </TouchableOpacity>
+
           <View style={styles.header}>
             <Image source={img} style={styles.image}/>
             <Text style={styles.plantName}>{plant.name}</Text>
@@ -127,7 +148,7 @@ export function PlantSave() {
           <View style={styles.footer}>
             <View style={styles.tip}>
               <Image source={waterdrop} style={styles.tipImage} />
-              <Text style={styles.tipText}>A rega deve ser feita com 400ml a cada dois dias</Text>
+              <Text style={styles.tipText}>{plant.water_tips}</Text>
             </View>
 
             <Text style={styles.alertLabel}>Ecolha o melhor horário para ser lembrado:</Text>
@@ -139,7 +160,7 @@ export function PlantSave() {
               onChange={handleChangeTime}
             />
 
-            <Button title="Cadastrar planta" onPress={handleConfirm}/>
+            <Button title="Confirmar alteração" onPress={handleUpdate}/>
           </View>
         </SafeAreaView>
     );
@@ -194,11 +215,19 @@ const styles = StyleSheet.create({
     fontFamily: 'Jost_400Regular',
     color: colors.heading,
     fontSize: 12,
-    marginVertical: 7
+    marginTop: 15
   },
   footer: {
     backgroundColor: colors.white,
     paddingHorizontal: 20,
     paddingTop: 20
+  },
+  removeButton: {
+    alignSelf: 'center'
+
+  },
+  removeButtonLabel: {
+    color: colors.green_dark,
+    fontWeight: 'bold'
   }
 });

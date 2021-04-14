@@ -1,18 +1,19 @@
 import React from 'react';
 import { StyleSheet, Text, Image, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 
-import img from '../assets/plants/imbe.png';
 import colors from '../styles/colors';
-
+import img from '../assets/plants/aningapara.png'
 
 interface PlantProps extends TouchableOpacityProps{
-    title: string
+    data: {
+        name: string
+    }
 }
 
-export const PlantCardPrimary = ({ title, ...rest }: PlantProps) => (
+export const PlantCardPrimary = ({ data, ...rest }: PlantProps) => (
     <TouchableOpacity style={styles.container} {...rest}> 
         <Image source={img} style={styles.image} />
-        <Text style={styles.text}>{title}</Text>
+        <Text style={styles.text}>{data.name}</Text>
     </TouchableOpacity>
   );
 

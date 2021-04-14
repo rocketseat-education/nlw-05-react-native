@@ -7,7 +7,6 @@ import {
 } from '@expo-google-fonts/jost';
 
 import Routes from './src/routes';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function App() {
 
@@ -20,7 +19,6 @@ export default function App() {
     // keep splash screen visible.
     return <AppLoading />
   }
-
   return (
     <Routes />
   )

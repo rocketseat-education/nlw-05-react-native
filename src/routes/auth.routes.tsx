@@ -10,11 +10,12 @@ const AppTab = createBottomTabNavigator();
 
 const AuthRoutes = () => {
   return(   
-    <AppTab.Navigator
+    <AppTab.Navigator    
+        initialRouteName="MyPlants"    
         tabBarOptions={{
             activeTintColor: colors.green,
             inactiveTintColor: colors.heading,
-            labelPosition: 'beside-icon',                                    
+            labelPosition: 'beside-icon',                                                       
         }}
     >
         <AppTab.Screen 
