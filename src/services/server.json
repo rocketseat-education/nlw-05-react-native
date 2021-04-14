@@ -1,0 +1,136 @@
+{
+    "plants_water_frequencies": [
+      {"key": "day", "title": "Todos os dias"},
+      {"key": "week", "title": "A cada semana"}
+    ],
+
+    "plants_environments": [
+      {"key": "living_room", "title": "Sala"},
+      {"key": "bedroom", "title": "Quarto"},
+      {"key": "kitchen", "title": "Cozinha"},
+      {"key": "bathroom", "title": "Banheiro"}      
+    ],
+
+    "plants": [
+      { 
+        "id": 1, 
+        "name": "Ave do Paraíso", 
+        "about": "A dica é usar esta planta em arranjos de mesa dando um toque de elegância ao ambiente. É uma espécie tropical que tem crescimento rápido e fácil manuseio.", 
+        "water_tips": "Mantenha a terra sempre húmida, mas sem encharcar. Regue 2 vezes na semana.", 
+        "photo": "ave.png", 
+        "environments": ["living_room", "kitchen"], 
+        "frequency": { 
+          "times": 2, 
+          "repeat_every": "week"
+        }
+      },
+      { 
+        "id": 2, 
+        "name": "Azaleia", 
+        "about": "Ideal para decorar e animar sua sala. Apesar de florescer na primavera, fica o ano todo bonita e verdinha. Pode ser encontra em várias cores e versões.", 
+        "water_tips": "Utilize vasos com furos e pedras no fundo para facilitar a drenagem. Regue 1 vez no dia.", 
+        "photo": "azaleia.png", 
+        "environments": ["living_room", "bedroom"], 
+        "frequency": { 
+          "times": 1, 
+          "repeat_every": "day"
+        }
+      },
+      { 
+        "id": 3, 
+        "name": "Lírio da Paz", 
+        "about": "Adapta-se tanto ao sol quanto à sombra, mas prefere ficar num cantinho fresco, sem sol direto. Pode chegar a atingir no máximo cinquenta centímetros.", 
+        "water_tips": "Mantenha a terra sempre húmida. Nos dias mais quentes borrife água nas folhas. Regue 3 vezes na semana.", 
+        "photo": "lirio.png", 
+        "environments": ["bedroom"], 
+        "frequency": { 
+          "times": 3, 
+          "repeat_every": "week"
+        }
+      },
+      { 
+        "id": 4, 
+        "name": "Palmeira Bambu", 
+        "about": "De médio porte que se adapta a diversas regiões, além de ser bem fácil de cultivar. Conquista cada vez mais pessoas.", 
+        "water_tips": "Mantenha a terra sempre húmida, mas sem encharcar. Regue 2 vezes na semana.", 
+        "photo": "palmeira.png", 
+        "environments": ["bedroom", "living_room"], 
+        "frequency": { 
+          "times": 2, 
+          "repeat_every": "week"
+        }
+      },
+      { 
+        "id": 5, 
+        "name": "Jasmin", 
+        "about": "Esta planta exala um cheirinho tão bom no quarto. O aroma reduz os níveis de ansiedade e seu cheiro pode ajudar a melhorar a qualidade do sono e a produtividade durante o dia.", 
+        "water_tips": "Regue o solo ao redor da jasmim. Regue 1 vez no dia.", 
+        "photo": "jasmin.png", 
+        "environments": ["bedroom", "living_room"], 
+        "frequency": { 
+          "times": 1, 
+          "repeat_every": "day"
+        }
+      },
+      { 
+        "id": 6, 
+        "name": "Suculentas", 
+        "about": "Como a cozinha geralmente é um ambiente bem agitado, as suculentas são indicadas pois são fáceis de manter se você cuidar delas direitinho. Você colocar em pequenos vasos, ou até mesmo em xícaras.", 
+        "water_tips": "Graças à reserva de água dessas verdinhas, é sempre melhor regar pouco. Regue 1 vez na semana.", 
+        "photo": "suculentas.png", 
+        "environments": ["kitchen", "bedroom"], 
+        "frequency": { 
+          "times": 1, 
+          "repeat_every": "week"
+        }
+      },
+      { 
+        "id": 7, 
+        "name": "Frutíferas", 
+        "about": "São ótimas opções para a cozinha! Em versão bonsai ou miniatura, dão frutos normalmente e ocupam pouquíssimo espaço. Exigem algumas horinhas de sol por dia, por isso deixe próximo a janelas.", 
+        "water_tips": "Regue sempre na terra e não as folhas. Regue 3 vezes na semana", 
+        "photo": "frutiferas.png", 
+        "environments": ["kitchen", "living_room"], 
+        "frequency": { 
+          "times": 3, 
+          "repeat_every": "week"
+        }
+      },
+      { 
+        "id": 8, 
+        "name": "Orquídea", 
+        "about": "Por gostarem muito de umidade, essas plantas são perfeitas para banheiros. Traz sensação de tranquilidade e paz ao ambiente. Requer pouca manutenção e ótima para quem tem pouco espaço no banheiro.", 
+        "water_tips": "Regue moderadamente. Reque 4 vezes na semana.", 
+        "photo": "orquidea.png", 
+        "environments": ["bathroom"], 
+        "frequency": { 
+          "times": 4, 
+          "repeat_every": "week"
+        }
+      },
+      { 
+        "id": 9, 
+        "name": "Violeta", 
+        "about": "A violetas são únicas, com suas cores e a delicadeza de suas flores. Elas são ótimas sugestões para decorar o banheiro. ", 
+        "water_tips": "São flores delicadas, por isso, nada de molhar as flores e folhas. Regue o solo. Regue 2 vezes na semana.", 
+        "photo": "orquidea.png", 
+        "environments": ["bathroom"], 
+        "frequency": { 
+          "times": 2, 
+          "repeat_every": "week"
+        }
+      },
+      { 
+        "id": 10, 
+        "name": "Hortênsia", 
+        "about": "A hortênsia é uma planta rústica e se adapta a diferentes tipos de solos. Muito utilizada como planta ornamental, ela ganha destaque devido os cachos que possui.", 
+        "water_tips": "Mantenha a terra sempre húmida, mas sem encharcar. Regue 1 vez no dia.", 
+        "photo": "hortensia.png", 
+        "environments": ["bathroom"], 
+        "frequency": { 
+          "times": 1, 
+          "repeat_every": "day"
+        }
+      }
+    ]
+}

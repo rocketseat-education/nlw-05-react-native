@@ -7,11 +7,18 @@ import {
     TouchableOpacity 
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/core';
 
-import wateringImg from '../assets/watering.png';
+import smileImg from '../assets/illustrations/watering.png';
 import colors from '../styles/colors';
 
 export function Welcome(){    
+    const navigation = useNavigation();
+
+    function handleStart(){
+        navigation.navigate('UserIdentification');
+    }   
+
     return(
         <SafeAreaView style={styles.container}>
             <Text style={styles.title}>
@@ -20,14 +27,14 @@ export function Welcome(){
                 forma fácil
             </Text>
 
-            <Image source={wateringImg} />
+            <Image source={smileImg} />
 
             <Text style={styles.subtitle}>
                 Não esqueça mais de regar suas plantas. 
                 Nós cuidamos de lembrar você sempre que precisar.
             </Text>
 
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={handleStart}>
                 <MaterialIcons name="chevron-right" style={styles.icon}/>
             </TouchableOpacity>
         </SafeAreaView>
