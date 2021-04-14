@@ -1,11 +1,12 @@
 import React from 'react';
 import { StyleSheet, ActivityIndicator, ActivityIndicatorProps } from 'react-native';
+import colors from '../styles/colors';
 
 type LoadProps = ActivityIndicatorProps;
 
 export const Load = ({ ...rest }: LoadProps ) => (
     <ActivityIndicator 
-        color="red" 
+        color={colors.green_dark}
         style={styles.load}
         {...rest}
     />

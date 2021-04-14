@@ -6,8 +6,12 @@ import { FlatList } from 'react-native-gesture-handler';
 import { PlantCardSecondary } from '../components/PlantCardSecondary';
 import { Header } from '../components/Header';
 import colors from '../styles/colors';
+import { formatDistance } from 'date-fns';
+import pt from 'date-fns/locale/pt-BR';
+
 
 import waterdrop from '../assets/waterdrop.png';
+import { Load } from '../components/Load';
 
 export interface PlantData {
     id: string;
@@ -44,6 +48,8 @@ interface StoragePlants {
 export function MyPlants() {   
   const [myplants, setMyPlants] = useState<PlantsProps[]>([])
   const [userName ,setUserName] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [nextWatered, setNextWatered] = useState<string>();
 
   const navigation = useNavigation();
   
@@ -67,7 +73,8 @@ export function MyPlants() {
       ? JSON.parse(data) as StoragePlants
       : {} as StoragePlants;        
 
-      const plantsFormatted = Object.keys(dataJson).map(plant => {
+      const plantsFormatted = Object.keys(dataJson)
+      .map(plant => {
         const notification = new Date(dataJson[plant].dateTimeNofication);
 
         const day = new Date(notification).toLocaleDateString('pt-BR', {
@@ -87,16 +94,29 @@ export function MyPlants() {
           about: dataJson[plant].about,
           water_tips: dataJson[plant].water_tips,
           day,
-          hour
+          hour,
+          dateTimeNofication: dataJson[plant].dateTimeNofication
         }
-      });
+      }).sort((a, b) => 
+          Math.floor((new Date(a.dateTimeNofication).getTime() / 1000) - Math.floor((new Date(b.dateTimeNofication).getTime() / 1000)))
+      );
 
-      setMyPlants(plantsFormatted)
+      const hours =formatDistance(
+        new Date(plantsFormatted[0].dateTimeNofication).getTime(), 
+        new Date().getTime(),
+        {locale: pt}
+      );
+
+      setNextWatered(`Não esqueça de regar a ${plantsFormatted[0].name} à ${hours} horas.`);
+      setMyPlants(plantsFormatted);
+      setLoading(false);
     } 
 
     loadStorageDate();
   },[]);
 
+  if(loading)
+    return <Load />
 
     return (
       <View style={styles.container}>
@@ -105,7 +125,7 @@ export function MyPlants() {
               <Image source={waterdrop} style={styles.spotlightImg}/>
 
               <Text style={styles.spotlightTitle}>
-                  Não esqueça de regar a sua plantinha daqui a 2 horas
+                  {nextWatered}
               </Text>
           </View>
 

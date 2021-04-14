@@ -147,12 +147,12 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 20,
-    paddingVertical: 50,
+    paddingVertical: 20,
     alignItems: 'center'
   },
   image: {
-    width: 155,
-    height: 175,
+    width: 145,
+    height: 180,
   },
   plantName: {
     textAlign: 'center',

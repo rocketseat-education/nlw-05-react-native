@@ -19,7 +19,7 @@ export const PlantCardSecondary = ({ name, day, hour, ...rest }: PlantProps) => 
         
         <View style={styles.details}>
             <Text style={styles.timeLabel}>Regar às</Text>                    
-            <Text style={styles.time}>{ day }</Text>                    
+            <Text style={styles.time}>{ hour }</Text>                    
         </View>      
     </TouchableOpacity>
   );

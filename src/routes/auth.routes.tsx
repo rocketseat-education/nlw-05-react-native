@@ -18,19 +18,6 @@ const AuthRoutes = () => {
         }}
     >
         <AppTab.Screen 
-            name="Nova Planta" 
-            component={PlantNew}
-            options={{
-                tabBarIcon: ({ size, color }) => (
-                    <MaterialIcons 
-                        name="add-circle-outline" 
-                        size={size}
-                        color={color}
-                    />
-                )
-            }}            
-        /> 
-        <AppTab.Screen 
             name="Minhas Plantas" 
             component={MyPlants}
             options={{
@@ -42,7 +29,21 @@ const AuthRoutes = () => {
                     />
                 )
             }}
-        />   
+        />  
+        
+        <AppTab.Screen 
+            name="Nova Planta" 
+            component={PlantNew}
+            options={{
+                tabBarIcon: ({ size, color }) => (
+                    <MaterialIcons 
+                        name="add-circle-outline" 
+                        size={size}
+                        color={color}
+                    />
+                )
+            }}            
+        />  
     </AppTab.Navigator>
   )
 };
