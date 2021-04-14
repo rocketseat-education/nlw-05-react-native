@@ -7,6 +7,7 @@ import img from '../assets/plants/aningapara.png'
 interface PlantProps extends TouchableOpacityProps{
     data: {
         name: string;
+        photo: string;
     }
 }
 

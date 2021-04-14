@@ -1,10 +1,10 @@
 import React from 'react';
-import { 
-    SafeAreaView, 
-    StyleSheet, 
-    Text, 
-    Image, 
-    TouchableOpacity 
+import {
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    Image,
+    TouchableOpacity
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/core';
@@ -12,25 +12,25 @@ import { useNavigation } from '@react-navigation/core';
 import smileImg from '../assets/illustrations/watering.png';
 import colors from '../styles/colors';
 
-export function Welcome(){    
+export function Welcome(){
     const navigation = useNavigation();
 
     function handleStart(){
         navigation.navigate('UserIdentification');
-    }   
+    }
 
     return(
         <SafeAreaView style={styles.container}>
             <Text style={styles.title}>
-                Gerencie {"\n"} 
-                suas plantas de {"\n"} 
+                Gerencie {"\n"}
+                suas plantas de {"\n"}
                 forma fácil
             </Text>
 
             <Image source={smileImg} />
 
             <Text style={styles.subtitle}>
-                Não esqueça mais de regar suas plantas. 
+                Não esqueça mais de regar suas plantas.
                 Nós cuidamos de lembrar você sempre que precisar.
             </Text>
 
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'space-between',        
+        justifyContent: 'space-between',
     },
     title: {
         fontSize: 32,
@@ -71,4 +71,4 @@ const styles = StyleSheet.create({
         fontSize: 32,
         color: colors.white
     }
-})
+});

@@ -1,10 +1,11 @@
 import React from 'react';
-import { 
-    TouchableOpacity, 
-    StyleSheet, 
-    Text, 
-    TouchableOpacityProps 
+import {
+    TouchableOpacity,
+    StyleSheet,
+    Text,
+    TouchableOpacityProps
 } from 'react-native';
+
 import colors from '../styles/colors';
 
 interface EnvironmentButtonProps extends TouchableOpacityProps{
@@ -24,7 +25,7 @@ const styles = StyleSheet.create({
         paddingVertical: 7,
         paddingHorizontal: 20,
         borderRadius: 10,
-        marginHorizontal: 5,        
+        marginHorizontal: 5,
     },
     text: {
         color: colors.heading,

@@ -1,47 +1,50 @@
 import { useNavigation, useRoute } from '@react-navigation/core';
 import React, { useCallback, useState } from 'react';
-import { 
-  Alert, 
-  StyleSheet, 
-  Text, 
+import {
+  Alert,
+  StyleSheet,
+  Text,
   View,
   Image,
-  SafeAreaView
+  ScrollView
 } from 'react-native';
-import { Button } from '../components/Button';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 
+import { Button } from '../components/Button';
+import { PlantData } from './PlantNew';
+import { getBottomSpace } from 'react-native-iphone-x-helper';
+
+import colors from '../styles/colors';
 import img from '../assets/plants/imbe.png';
 import waterdrop from '../assets/waterdrop.png';
-import colors from '../styles/colors';
-import { PlantData } from './PlantNew';
 
 interface Params {
   plant: PlantData
 }
 
-export interface StoragePlants {
+interface StoragePlants {
   [id: string]: {
     name: string;
+    about: string;
+    water_tips: string;
     photo: string;
-    dateTimeNofication: Date;
-    frequency: { 
-      times: number; 
+    dateTimeNotification: Date;
+    frequency: {
+      times: number;
       repeat_every: string;
     }
-    notificationId: string;
-  }  
+  }
 }
 
 
-export function PlantSave() {   
-    const [selectedDateTime, setSelectedDateTime] = useState(new Date); 
-
-    const navigation = useNavigation();
+export function PlantSave() {
+    const [selectedDateTime, setSelectedDateTime] = useState(new Date);
 
     const route = useRoute();
+    const navigation = useNavigation();
+
     const { plant } = route.params as Params;
 
     // com evento explicito => (event: Event, dateTime: Date | undefined)
@@ -51,43 +54,42 @@ export function PlantSave() {
       }
     },[]);
 
-    const handleConfirm = useCallback(async () => {  
-      const { times, repeat_every } = plant.frequency; 
+    const handleConfirm = useCallback(async () => {
+      const { times, repeat_every } = plant.frequency;
       const nextMoment = selectedDateTime;
 
       if(repeat_every === 'week'){
-        const interval = Math.trunc(7 / times);        
+        const interval = Math.trunc(7 / times);
         nextMoment.setDate(nextMoment.getDate() + interval)
       }
       // else
-      //   nextMoment.setDate(nextMoment.getDate() + 1)        
+      //   nextMoment.setDate(nextMoment.getDate() + 1)
 
-      try {        
+      try {
         const data = await AsyncStorage.getItem('@plantmanager:plants');
-        const plants = data 
+        const plants = data
         ? JSON.parse(data) as StoragePlants
         : {};
 
         const newPlant = {
             name: plant.name,
-            photo: plant.photo,
             about: plant.about,
+            photo: plant.photo,
             water_tips: plant.water_tips,
-            dateTimeNofication: selectedDateTime,
-            frequency: plant.frequency            
+            dateTimeNotification: selectedDateTime,
+            frequency: plant.frequency
         }
 
-        // Cria a notificação.
-        const notificationId = await Notifications.scheduleNotificationAsync({          
+        const notificationId = await Notifications.scheduleNotificationAsync({
           content: {
-            title: `Heeey, 🌱`,            
+            title: `Heeey, 🌱`,
             body: `Está na hora de cuidar da sua ${plant.name}.`,
             sound: true,
-            priority: Notifications.AndroidNotificationPriority.HIGH,            
+            priority: Notifications.AndroidNotificationPriority.HIGH,
             data: { plant:  {
                 id: plant.id,
                 ...newPlant
-              } 
+              }
             }
           },
           trigger: {
@@ -98,10 +100,16 @@ export function PlantSave() {
             minute: nextMoment.getMinutes(),
           },
         });
-        
-        const storagePlant = {[plant.id]: {...newPlant, notificationId}};        
 
-        await AsyncStorage.setItem('@plantmanager:plants', JSON.stringify({...plants, ...storagePlant}));
+        const newStoragePlant = {
+          [plant.id]: {
+            ...newPlant,
+            notificationId
+          }
+        };
+
+        await AsyncStorage.setItem('@plantmanager:plants', JSON.stringify({...plants, ...newStoragePlant}));
+
         navigation.navigate('Confirmation', {
           title: 'Tudo certo',
           subtitle: 'Fique tranquilo que sempre vamos lembrar você de cuidar da sua plantinha com bastante amor.',
@@ -110,27 +118,33 @@ export function PlantSave() {
           nextScreen: 'MyPlants'
         });
 
-      } catch (error) {
-        console.error(error)
+      } catch {
         Alert.alert('Não foi possível cadastrar sua plantinha. 😢')
-      }      
+      }
     },[selectedDateTime]);
 
     return (
-        <SafeAreaView style={styles.container}> 
-          <View style={styles.header}>
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.container}
+      >
+          <View style={styles.plantInfo}>
             <Image source={img} style={styles.image}/>
             <Text style={styles.plantName}>{plant.name}</Text>
             <Text style={styles.plantAbout}>{plant.about}</Text>
           </View>
-          
-          <View style={styles.footer}>
-            <View style={styles.tip}>
+
+          <View style={styles.controller}>
+            <View style={styles.tipContainer}>
               <Image source={waterdrop} style={styles.tipImage} />
-              <Text style={styles.tipText}>A rega deve ser feita com 400ml a cada dois dias</Text>
+              <Text style={styles.tipText}>
+                A rega deve ser feita com 400ml a cada dois dias
+              </Text>
             </View>
 
-            <Text style={styles.alertLabel}>Ecolha o melhor horário para ser lembrado:</Text>
+            <Text style={styles.alertLabel}>
+              Ecolha o melhor horário para ser lembrado:
+            </Text>
 
             <DateTimePicker
               value={selectedDateTime}
@@ -141,24 +155,33 @@ export function PlantSave() {
 
             <Button title="Cadastrar planta" onPress={handleConfirm}/>
           </View>
-        </SafeAreaView>
+      </ScrollView>
     );
 }
 
-const styles = StyleSheet.create({  
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
     backgroundColor: colors.shape,
   },
-  header: {
+  plantInfo: {
+    flex: 1,
     paddingHorizontal: 20,
     paddingVertical: 50,
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.shape,
+  },
+  controller: {
+    backgroundColor: colors.white,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: getBottomSpace(),
   },
   image: {
-    width: 155,
-    height: 175,
+    width: 100,
+    height: 140,
   },
   plantName: {
     textAlign: 'center',
@@ -174,7 +197,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 10
   },
-  tip: {
+  tipContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -196,9 +219,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginVertical: 7
   },
-  footer: {
-    backgroundColor: colors.white,
-    paddingHorizontal: 20,
-    paddingTop: 20
-  }
+
 });

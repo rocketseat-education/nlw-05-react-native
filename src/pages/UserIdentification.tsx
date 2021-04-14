@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/core';
 import React, { useCallback, useState } from 'react';
-import { 
-    SafeAreaView, 
-    StyleSheet, 
-    Text, 
+import {
+    SafeAreaView,
+    StyleSheet,
+    Text,
     TextInput,
     View,
     KeyboardAvoidingView,
@@ -13,13 +13,13 @@ import {
     Keyboard,
     Alert
 } from 'react-native';
-import { Button } from '../components/Button';
 
+import { Button } from '../components/Button';
 import colors from '../styles/colors';
 
-export function UserIdentification(){ 
-const [name, setName] = useState("");
-  
+export function UserIdentification(){
+  const [name, setName] = useState("");
+
   const navigation = useNavigation();
 
   const handleSubmit = useCallback(async () => {
@@ -39,7 +39,7 @@ const [name, setName] = useState("");
       Alert.alert('Não foi possível salvar o nome. 😢')
     }
   },[name]);
-       
+
     return(
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView
@@ -50,12 +50,12 @@ const [name, setName] = useState("");
                     <View style={styles.content}>
                         <View style={styles.form}>
                             <Text style={styles.title}>
-                                Como podemos {"\n"} 
+                                Como podemos {"\n"}
                                 chamar você?
                             </Text>
 
-                            <TextInput 
-                                style={styles.input} 
+                            <TextInput
+                                style={styles.input}
                                 autoCorrect={false}
                                 onChangeText={setName}
                             />
@@ -66,7 +66,7 @@ const [name, setName] = useState("");
                         </View>
                     </View>
                 </TouchableWithoutFeedback>
-            </KeyboardAvoidingView>                
+            </KeyboardAvoidingView>
         </SafeAreaView>
     )
 }
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
         flex: 1,
         width: "100%",
         alignItems: 'center',
-        justifyContent: 'space-between',        
+        justifyContent: 'space-between',
     },
     content: {
         flex: 1,
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     },
     form: {
         flex: 1,
-        justifyContent: 'center',    
+        justifyContent: 'center',
         width: "100%",
         padding: 30
     },

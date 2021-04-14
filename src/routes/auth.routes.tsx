@@ -14,8 +14,10 @@ const AuthRoutes = () => {
         tabBarOptions={{
             activeTintColor: colors.green,
             inactiveTintColor: colors.heading,
-            labelPosition: 'beside-icon',                                                       
-        }}
+            labelPosition: 'beside-icon',                                                                   
+        }
+    }
+
     >
         <AppTab.Screen 
             name="Minhas Plantas" 
@@ -30,7 +32,7 @@ const AuthRoutes = () => {
                 )
             }}
         />  
-        
+
         <AppTab.Screen 
             name="Nova Planta" 
             component={PlantNew}
@@ -43,7 +45,7 @@ const AuthRoutes = () => {
                     />
                 )
             }}            
-        />  
+        /> 
     </AppTab.Navigator>
   )
 };

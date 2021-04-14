@@ -1,17 +1,18 @@
 import React from 'react';
-import { 
-    SafeAreaView, 
-    StyleSheet, 
-    Text, 
-    Image, 
-    View 
+import {
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    Image,
+    View
 } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/core';
+
+import { Button } from '../components/Button';
 
 import smileImg from '../assets/emojis/smile.png';
 import hugImg from '../assets/emojis/hug.png';
 import colors from '../styles/colors';
-import { Button } from '../components/Button';
-import { useNavigation, useRoute } from '@react-navigation/core';
 
 
 interface Params {
@@ -20,26 +21,34 @@ interface Params {
     buttonTitle: string;
     icon: 'smile' | 'hug';
     nextScreen: string;
-}  
+}
 
 const icons = {
     hug: hugImg,
     smile: smileImg
 }
 
-export function Confirmation(){ 
+export function Confirmation(){
     const navigation = useNavigation();
     const route = useRoute();
-    const { title, subtitle, buttonTitle, icon, nextScreen } = route.params as Params;
+
+    const {
+      title,
+      subtitle,
+      buttonTitle,
+      icon,
+      nextScreen
+    } = route.params as Params;
 
     function handleStart(){
         navigation.navigate(nextScreen);
-    }   
+    }
 
     return(
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>
                 <Image source={icons[icon]} />
+
                 <Text style={styles.title}>
                     {title}
                 </Text>
@@ -59,7 +68,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'space-between',        
+        justifyContent: 'space-between',
     },
     title: {
         fontSize: 32,
@@ -92,8 +101,8 @@ const styles = StyleSheet.create({
     },
     content: {
         flex: 1,
-        justifyContent: 'center',  
-        alignItems: 'center',  
+        justifyContent: 'center',
+        alignItems: 'center',
         width: "100%",
         padding: 30
     },
