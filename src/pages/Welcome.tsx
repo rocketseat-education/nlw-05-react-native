@@ -65,7 +65,8 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: colors.green,
         padding: 17,
-        borderRadius: 20
+        borderRadius: 20,
+        marginBottom: 10
     },
     icon: {
         fontSize: 32,

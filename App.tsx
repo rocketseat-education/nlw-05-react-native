@@ -1,21 +1,37 @@
 import React, { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
 import AppLoading from 'expo-app-loading';
-import { 
-  Jost_400Regular, 
-  Jost_600SemiBold, 
-  useFonts 
+import {
+  Jost_400Regular,
+  Jost_600SemiBold,
+  useFonts
 } from '@expo-google-fonts/jost';
 
 import Routes from './src/routes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { StoragePlants } from './src/pages/PlantSave';
-interface StoragePlant {
+
+interface StoragePlants {
+  [id: string]: {
+    name: string;
+    about: string;
+    water_tips: string;
+    photo: string;
+    dateTimeNotification: Date;
+    notificationId: string;
+    frequency: {
+      times: number;
+      repeat_every: string;
+    }
+  }
+}
+
+interface Plant {
     id: string;
-    dateTimeNofication: Date;
-    frequency: { 
-      times: number; 
+    dateTimeNotification: Date;
+    frequency: {
+      times: number;
       repeat_every: string;
     }
 }
@@ -37,59 +53,73 @@ export default function App() {
 
   useEffect(() => {
     async function notifications(){
-      const notifications = await Notifications.getAllScheduledNotificationsAsync();
-      // const notifications = await Notifications.cancelAllScheduledNotificationsAsync();
-      console.log(notifications);
+      // const notifications = await Notifications.getAllScheduledNotificationsAsync();
+      const notifications = await Notifications.cancelAllScheduledNotificationsAsync();
+      console.log("NOTIFICAÇÕES SALVAS ====>");
+      console.log(notifications)
     }
 
     notifications();
 
     const subscription = Notifications.addNotificationReceivedListener(async notification => {
-      const { id, frequency } = notification.request.content.data.plant as StoragePlant;
-            
+      const { id, frequency } = notification.request.content.data.plant as Plant;
+
       const nextMoment = new Date();
 
       if(frequency.repeat_every === 'week'){
-        const interval = Math.trunc(7 / frequency.times);        
+        const interval = Math.trunc(7 / frequency.times);
         nextMoment.setDate(nextMoment.getDate() + interval)
       }
       else
-      nextMoment.setDate(nextMoment.getDate() + 1)  
+      nextMoment.setDate(nextMoment.getDate() + 1)
 
-      try {        
+      try {
         const data = await AsyncStorage.getItem('@plantmanager:plants');
-        const plants = data 
+        const plants = data
         ? JSON.parse(data) as StoragePlants
         : {};
 
-        plants[id].dateTimeNofication = nextMoment;
+        plants[id].dateTimeNotification = nextMoment;
 
-        const notificationId = await Notifications.scheduleNotificationAsync({          
+        const secondBetweenDates = Math.abs(Math.ceil((
+          new Date().getTime() - nextMoment.getTime()) / 1000
+        ));
+
+
+        // const trigger = Platform.OS === "ios"
+        // ? {
+        //   day: nextMoment.getDate(),
+        //   month: nextMoment.getMonth() + 1,
+        //   year: nextMoment.getFullYear(),
+        //   hour: nextMoment.getHours(),
+        //   minute: nextMoment.getMinutes(),
+        // }
+        // : {
+        //   seconds: secondBetweenDates,
+        // }
+
+
+        const notificationId = await Notifications.scheduleNotificationAsync({
           content: {
-            title: `Heeey,`,            
+            title: `Heeey,`,
             body: `Está na hora de cuidar da sua ${plants[id].name}.`,
             sound: true,
-            priority: Notifications.AndroidNotificationPriority.HIGH,            
+            priority: Notifications.AndroidNotificationPriority.HIGH,
             data: { plant: {id, ...plants[id] }}
           },
           trigger: {
-            day: nextMoment.getDate(),
-            month: nextMoment.getMonth() + 1,
-            year: nextMoment.getFullYear(),
-            hour: nextMoment.getHours(),
-            minute: nextMoment.getMinutes(),
-          },
+            seconds: secondBetweenDates,
+          }
         });
 
         plants[id].notificationId = notificationId;
         await AsyncStorage.setItem('@plantmanager:plants', JSON.stringify(plants));
-        
+
       } catch (error) {
-        console.error(error)        
-      }  
+        console.error(error)
+      }
     });
     return () => subscription.remove();
-
   }, []);
 
   if(!fontsLoaded){

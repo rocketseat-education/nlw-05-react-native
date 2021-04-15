@@ -6,11 +6,14 @@ import {
   Text,
   View,
   Image,
-  ScrollView
+  ScrollView,
+  Platform,
+  TouchableOpacity
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
+import { format } from 'date-fns';
 
 import { Button } from '../components/Button';
 import { PlantData } from './PlantNew';
@@ -41,18 +44,26 @@ interface StoragePlants {
 
 export function PlantSave() {
     const [selectedDateTime, setSelectedDateTime] = useState(new Date);
+    const [showDatePicker, setShowDatePicker] = useState(Platform.OS === "ios");
 
     const route = useRoute();
     const navigation = useNavigation();
 
     const { plant } = route.params as Params;
 
+    const handleOpenDateTimePickerForAndroid = useCallback(() => {
+      setShowDatePicker(oldState => !oldState);
+    }, []);
+
     // com evento explicito => (event: Event, dateTime: Date | undefined)
     const handleChangeTime = useCallback((_, dateTime: Date | undefined) => {
-      if(dateTime){
-        setSelectedDateTime(dateTime);
+      if (Platform.OS === 'android') {
+        setShowDatePicker(oldState => !oldState);
       }
-    },[]);
+
+      if (dateTime)
+        setSelectedDateTime(dateTime);
+    }, []);
 
     const handleConfirm = useCallback(async () => {
       const { times, repeat_every } = plant.frequency;
@@ -80,6 +91,27 @@ export function PlantSave() {
             frequency: plant.frequency
         }
 
+        const secondBetweenDates = Math.abs(Math.ceil((
+          (new Date().getTime()) - nextMoment.getTime()) / 1000
+        ));
+
+        console.log("AGORA ===> ", new Date())
+        console.log("PROXIMA DATA ===> ", nextMoment)
+        console.log("SEGUNDOS SALVOS ===> ", secondBetweenDates)
+
+        // const trigger = Platform.OS === 'ios'
+        // ? {
+        //   day: nextMoment.getDate(),
+        //   month: nextMoment.getMonth() + 1,
+        //   year: nextMoment.getFullYear(),
+        //   hour: nextMoment.getHours(),
+        //   minute: nextMoment.getMinutes(),
+        // }
+        // : {
+        //   seconds: secondBetweenDates,
+        // }
+
+
         const notificationId = await Notifications.scheduleNotificationAsync({
           content: {
             title: `Heeey, 🌱`,
@@ -93,12 +125,9 @@ export function PlantSave() {
             }
           },
           trigger: {
-            day: nextMoment.getDate(),
-            month: nextMoment.getMonth() + 1,
-            year: nextMoment.getFullYear(),
-            hour: nextMoment.getHours(),
-            minute: nextMoment.getMinutes(),
-          },
+            seconds: secondBetweenDates,
+          }
+
         });
 
         const newStoragePlant = {
@@ -118,10 +147,12 @@ export function PlantSave() {
           nextScreen: 'MyPlants'
         });
 
-      } catch {
+      } catch (erro) {
+        console.log(erro)
         Alert.alert('Não foi possível cadastrar sua plantinha. 😢')
       }
     },[selectedDateTime]);
+
 
     return (
       <ScrollView
@@ -146,12 +177,28 @@ export function PlantSave() {
               Ecolha o melhor horário para ser lembrado:
             </Text>
 
-            <DateTimePicker
-              value={selectedDateTime}
-              mode="time"
-              display="spinner"
-              onChange={handleChangeTime}
-            />
+            {showDatePicker && (
+              <DateTimePicker
+                value={selectedDateTime}
+                mode="time"
+                display="spinner"
+                onChange={handleChangeTime}
+              />)
+            }
+
+            {
+              Platform.OS === "android" &&
+              (
+                <TouchableOpacity
+                  style={styles.OpenDateTimePickerButton}
+                  onPress={handleOpenDateTimePickerForAndroid}
+                >
+                  <Text style={styles.OpenDateTimePickerText}>
+                    {`Mudar ${format(selectedDateTime, "HH:mm")}`}
+                  </Text>
+                </TouchableOpacity>
+              )
+            }
 
             <Button title="Cadastrar planta" onPress={handleConfirm}/>
           </View>
@@ -177,7 +224,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: getBottomSpace(),
+    paddingBottom: getBottomSpace() || 20,
   },
   image: {
     width: 100,
@@ -219,5 +266,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginVertical: 7
   },
-
+  OpenDateTimePickerButton: {
+    width: '100%',
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  OpenDateTimePickerText: {
+    color: colors.heading,
+    fontSize: 24,
+    fontFamily: 'Jost_400Regular',
+  }
 });

@@ -6,8 +6,8 @@ import {
   Text,
   View,
   Image,
-  SafeAreaView,
-  ScrollView
+  Platform,
+  ScrollView,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,6 +23,7 @@ import { PlantData } from './PlantNew';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
 import { getBottomSpace } from 'react-native-iphone-x-helper';
+import { format } from 'date-fns/esm';
 
 interface Params {
   plant: PlantData
@@ -44,6 +45,8 @@ interface StoragePlants {
 
 export function PlantEdit() {
     const [selectedDateTime, setSelectedDateTime] = useState(new Date);
+    const [showDatePicker, setShowDatePicker] = useState(Platform.OS === "ios");
+
     const navigation = useNavigation();
     const route = useRoute();
     const { plant } = route.params as Params;
@@ -54,6 +57,10 @@ export function PlantEdit() {
         setSelectedDateTime(dateTime);
       }
     },[]);
+
+    const handleOpenDateTimePickerForAndroid = useCallback(() => {
+      setShowDatePicker(oldState => !oldState);
+    }, []);
 
 
     const handleUpdate = useCallback(async () => {
@@ -142,12 +149,28 @@ export function PlantEdit() {
 
             <Text style={styles.alertLabel}>Ecolha o melhor horário para ser lembrado:</Text>
 
-            <DateTimePicker
-              value={selectedDateTime}
-              mode="time"
-              display="spinner"
-              onChange={handleChangeTime}
-            />
+            {showDatePicker && (
+              <DateTimePicker
+                value={selectedDateTime}
+                mode="time"
+                display="spinner"
+                onChange={handleChangeTime}
+              />)
+            }
+
+            {
+              Platform.OS === "android" &&
+              (
+                <TouchableOpacity
+                  style={styles.OpenDateTimePickerButton}
+                  onPress={handleOpenDateTimePickerForAndroid}
+                >
+                  <Text style={styles.OpenDateTimePickerText}>
+                    {`Mudar ${format(selectedDateTime, "HH:mm")}`}
+                  </Text>
+                </TouchableOpacity>
+              )
+            }
 
             <Button title="Confirmar alteração" onPress={handleUpdate}/>
           </View>
@@ -220,9 +243,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: getBottomSpace()
+    paddingBottom: getBottomSpace() || 20
   },
   removeButton: {
     alignSelf: 'center',
   },
+  OpenDateTimePickerButton: {
+    width: '100%',
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  OpenDateTimePickerText: {
+    color: colors.heading,
+    fontSize: 24,
+    fontFamily: 'Jost_400Regular',
+  }
 });
