@@ -13,7 +13,7 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import { format } from 'date-fns';
+import { format, isBefore } from 'date-fns';
 
 import { Button } from '../components/Button';
 import { PlantData } from './PlantNew';
@@ -61,7 +61,10 @@ export function PlantSave() {
         setShowDatePicker(oldState => !oldState);
       }
 
-      if (dateTime)
+      if(dateTime && isBefore(dateTime, new Date()))
+        return Alert.alert('Escolha uma hora no futuro! ⏰');
+
+      if(dateTime)
         setSelectedDateTime(dateTime);
     }, []);
 
@@ -179,7 +182,7 @@ export function PlantSave() {
 
             {showDatePicker && (
               <DateTimePicker
-                minimumDate={new Date()}
+                // minimumDate={new Date()}
                 value={selectedDateTime}
                 mode="time"
                 display="spinner"
