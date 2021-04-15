@@ -49,6 +49,7 @@ export function UserIdentification(){
 
   const handleInputFocus = useCallback(() => {
     setInputActive(true);
+    setIsFilled(true);
   },[]);
 
     return(

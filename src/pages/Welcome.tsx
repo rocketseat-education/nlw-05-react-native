@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     SafeAreaView,
     StyleSheet,
@@ -6,6 +6,7 @@ import {
     Image,
     TouchableOpacity
 } from 'react-native';
+import * as Notifications from 'expo-notifications';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/core';
 
@@ -14,10 +15,24 @@ import colors from '../styles/colors';
 
 export function Welcome(){
     const navigation = useNavigation();
+    const lastNotificationResponse = Notifications.useLastNotificationResponse();
 
     function handleStart(){
         navigation.navigate('UserIdentification');
     }
+
+    useEffect(() => {
+      if (
+        lastNotificationResponse &&
+        lastNotificationResponse.notification.request.content.data.plant &&
+        lastNotificationResponse.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
+      ) {
+        navigation.navigate('MyPlants', {
+          plant: lastNotificationResponse.notification.request.content.data.plant
+        });
+      }
+
+    }, [lastNotificationResponse]);
 
     return(
         <SafeAreaView style={styles.container}>

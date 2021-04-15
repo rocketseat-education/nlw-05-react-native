@@ -179,6 +179,7 @@ export function PlantSave() {
 
             {showDatePicker && (
               <DateTimePicker
+                minimumDate={new Date()}
                 value={selectedDateTime}
                 mode="time"
                 display="spinner"
