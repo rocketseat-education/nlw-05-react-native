@@ -4,11 +4,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import AppRoutes from './app.routes';
 
 const Routes = () => {
-  return(
+  return (
     <NavigationContainer>
-      <AppRoutes /> 
+      <AppRoutes />
     </NavigationContainer>
-  )
+  );
 };
 
 export default Routes;

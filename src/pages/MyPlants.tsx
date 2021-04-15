@@ -6,24 +6,21 @@ import { RectButton, TouchableOpacity } from 'react-native-gesture-handler';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import * as Notifications from 'expo-notifications';
 
+import pt, { formatDistance } from 'date-fns';
+import { Feather } from '@expo/vector-icons';
 import { PlantCardSecondary } from '../components/PlantCardSecondary';
 import { Header } from '../components/Header';
-import { formatDistance } from 'date-fns';
-import pt from 'date-fns/locale/pt-BR';
-
-
 
 import colors from '../styles/colors';
 import waterdrop from '../assets/waterdrop.png';
 import { Load } from '../components/Load';
-import { Feather } from '@expo/vector-icons';
 
 export interface PlantData {
-    id: string;
-    name: string;
-    photo: string;
-    day: string;
-    hour: string;
+  id: string;
+  name: string;
+  photo: string;
+  day: string;
+  hour: string;
 }
 
 interface PlantsProps {
@@ -47,56 +44,61 @@ interface StoragePlants {
     frequency: {
       times: number;
       repeat_every: string;
-    }
-  }
+    };
+  };
 }
 
 export function MyPlants() {
-  const [myplants, setMyPlants] = useState<PlantsProps[]>([])
-  const [userName ,setUserName] = useState('');
+  const [myPlants, setMyPlants] = useState<PlantsProps[]>([]);
+  const [userName, setUserName] = useState('');
   const [loading, setLoading] = useState(true);
   const [nextWatered, setNextWatered] = useState<string>();
 
   const navigation = useNavigation();
 
-  function handleOpen(plant: PlantData){
+  function handleOpen(plant: PlantData) {
     navigation.navigate('PlantEdit', { plant });
   }
 
-  const handleRemove = useCallback((data: PlantData) => {
-    const { id } = data;
+  const handleRemove = useCallback(
+    (data: PlantData) => {
+      const { id } = data;
 
-    Alert.alert(
-      'Remover',
-      `Deseja remover a ${data.name}?`,
-      [
+      Alert.alert('Remover', `Deseja remover a ${data.name}?`, [
         {
-          text: "Não 🙏🏼",
-          style: "cancel"
+          text: 'Não 🙏🏼',
+          style: 'cancel',
         },
         {
-          text: "Sim 🥲",
+          text: 'Sim 🥲',
           onPress: async () => {
             try {
               const data = await AsyncStorage.getItem('@plantmanager:plants');
-              const plants = data
-              ? JSON.parse(data) as StoragePlants
-              : {};
+              const plants = data ? (JSON.parse(data) as StoragePlants) : {};
 
-              await Notifications.cancelScheduledNotificationAsync(plants[id].notificationId);
+              await Notifications.cancelScheduledNotificationAsync(
+                plants[id].notificationId
+              );
+
               delete plants[id];
-              await AsyncStorage.setItem('@plantmanager:plants', JSON.stringify(plants));
 
-              setMyPlants(oldData => oldData.filter(item => item.id !== id));
+              await AsyncStorage.setItem(
+                '@plantmanager:plants',
+                JSON.stringify(plants)
+              );
+
+              setMyPlants((oldData) =>
+                oldData.filter((item) => item.id !== id)
+              );
             } catch (error) {
               Alert.alert('Não foi possível remover.');
             }
-          }
-        }
-      ]
-    );
-
-  },[myplants]);
+          },
+        },
+      ]);
+    },
+    [myPlants]
+  );
 
   useEffect(() => {
     async function loadStorageDate(): Promise<void> {
@@ -105,116 +107,114 @@ export function MyPlants() {
     }
 
     loadStorageDate();
-  },[]);
+  }, []);
 
   useEffect(() => {
     async function loadStorageDate(): Promise<void> {
       const data = await AsyncStorage.getItem('@plantmanager:plants');
 
       const dataJson = data
-      ? JSON.parse(data) as StoragePlants
-      : {} as StoragePlants;
+        ? (JSON.parse(data) as StoragePlants)
+        : ({} as StoragePlants);
 
-      console.log(!!dataJson)
-
+      console.log(!!dataJson);
 
       const plantsFormatted = Object.keys(dataJson)
-      .map(plant => {
-        const notification = new Date(dataJson[plant].dateTimeNotification);
+        .map((plant) => {
+          const notification = new Date(dataJson[plant].dateTimeNotification);
 
-        const day = new Date(notification).toLocaleDateString('pt-BR', {
-          day: '2-digit',
-          month: '2-digit',
-        });
+          const day = new Date(notification).toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+          });
 
-        const hour = new Date(notification).toLocaleTimeString('pt-BR', {
-          hour: '2-digit',
-          minute:'2-digit'
-        });
+          const hour = new Date(notification).toLocaleTimeString('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit',
+          });
 
-        return {
-          id: plant,
-          name: dataJson[plant].name,
-          photo: dataJson[plant].photo,
-          about: dataJson[plant].about,
-          water_tips: dataJson[plant].water_tips,
-          day,
-          hour,
-          dateTimeNotification: dataJson[plant].dateTimeNotification
-        }
-      }).sort((a, b) =>
-          Math.floor((new Date(a.dateTimeNotification).getTime() / 1000) - Math.floor((new Date(b.dateTimeNotification).getTime() / 1000)))
-      );
+          return {
+            id: plant,
+            name: dataJson[plant].name,
+            photo: dataJson[plant].photo,
+            about: dataJson[plant].about,
+            water_tips: dataJson[plant].water_tips,
+            day,
+            hour,
+            dateTimeNotification: dataJson[plant].dateTimeNotification,
+          };
+        })
+        .sort((a, b) =>
+          Math.floor(
+            new Date(a.dateTimeNotification).getTime() / 1000 -
+              Math.floor(new Date(b.dateTimeNotification).getTime() / 1000)
+          )
+        );
 
-      const hours =formatDistance(
+      const hours = formatDistance(
         new Date(plantsFormatted[0].dateTimeNotification).getTime(),
         new Date().getTime(),
-        {locale: pt}
+        { locale: pt }
       );
 
-      setNextWatered(`Não esqueça de regar a ${plantsFormatted[0].name} à ${hours} horas.`);
+      setNextWatered(
+        `Não esqueça de regar a ${plantsFormatted[0].name} à ${hours} horas.`
+      );
       setMyPlants(plantsFormatted);
 
       setLoading(false);
     }
 
     loadStorageDate();
-  },[]);
+  }, []);
 
+  if (loading) {
+    return <Load />;
+  }
 
+  return (
+    <View style={styles.container}>
+      <Header userName={userName} />
 
-  if(loading)
-    return <Load />
+      <View style={styles.spotlight}>
+        <Image source={waterdrop} style={styles.spotlightImg} />
 
-    return (
-      <View style={styles.container}>
-        <Header userName={userName} />
+        <Text style={styles.spotlightTitle}>{nextWatered}</Text>
+      </View>
 
-        <View style={styles.spotlight}>
-            <Image source={waterdrop} style={styles.spotlightImg}/>
+      <View style={styles.plants}>
+        <Text style={styles.plantsTitle}>Próximas regadas</Text>
 
-            <Text style={styles.spotlightTitle}>
-                {nextWatered}
-            </Text>
-        </View>
-
-        <View style={styles.plants}>
-          <Text style={styles.plantsTitle}>Próximas regadas</Text>
-
-          {/* <FlatList
+        {/* <FlatList
               data={myplants}
               renderItem={({ item }) => <PlantCardSecondary data={item} onPress={() => handleOpen(item)}/>}
               keyExtractor={item => item.id}
               showsVerticalScrollIndicator={false}
           /> */}
 
-          <SwipeListView
-            data={myplants}
-            showsVerticalScrollIndicator={false}
-            renderItem={(data, rowMap) => (
-                <PlantCardSecondary
-                  data={data.item}
-                  onPress={() => handleOpen(data.item)}
-                />
-            )}
-            renderHiddenItem={ (data, rowMap) => (
-                <RectButton
-                  style={styles.buttonRemove}
-                  onPress={() => handleRemove(data.item)}
-                >
-                    <Feather
-                      name="trash"
-                      size={32}
-                      color={colors.white}
-                    />
-                </RectButton>
-            )}
-            disableRightSwipe
-            rightOpenValue={-70}
+        <SwipeListView
+          data={myPlants}
+          showsVerticalScrollIndicator={false}
+          renderItem={(data) => (
+            <PlantCardSecondary
+              data={data.item}
+              onPress={() => handleOpen(data.item)}
+            />
+          )}
+          renderHiddenItem={(data) => (
+            <RectButton
+              style={styles.buttonRemove}
+              onPress={() => handleRemove(data.item)}
+            >
+              <Feather name="trash" size={32} color={colors.white} />
+            </RectButton>
+          )}
+          disableRightSwipe
+          rightOpenValue={-70}
         />
-        </View>
       </View>
-    );
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
   },
   spotlightImg: {
     width: 60,
-    height: 60
+    height: 60,
   },
   spotlightTitle: {
     flex: 1,
@@ -246,14 +246,14 @@ const styles = StyleSheet.create({
   },
   plants: {
     flex: 1,
-    width: "100%",
+    width: '100%',
   },
   plantsTitle: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontFamily: 'Jost_600SemiBold',
     color: colors.heading,
-    marginVertical: 20
+    marginVertical: 20,
   },
   noPlantsContainer: {
     flex: 1,
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
   },
   noPlantsContainerText: {
     fontFamily: 'Jost_400Regular',
-    color: colors.heading
+    color: colors.heading,
   },
   buttonRemove: {
     backgroundColor: colors.red,
@@ -271,6 +271,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-end',
     paddingRight: 20,
-    marginLeft: 100
+    marginLeft: 100,
   },
 });

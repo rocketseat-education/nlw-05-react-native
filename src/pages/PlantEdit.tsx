@@ -13,6 +13,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { MaterialIcons } from '@expo/vector-icons';
+import { getBottomSpace } from 'react-native-iphone-x-helper';
+import { format } from 'date-fns/esm';
 import { Button } from '../components/Button';
 
 import colors from '../styles/colors';
@@ -20,13 +24,9 @@ import img from '../assets/plants/imbe.png';
 import waterdrop from '../assets/waterdrop.png';
 
 import { PlantData } from './PlantNew';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { MaterialIcons } from '@expo/vector-icons';
-import { getBottomSpace } from 'react-native-iphone-x-helper';
-import { format } from 'date-fns/esm';
 
 interface Params {
-  plant: PlantData
+  plant: PlantData;
 }
 
 interface StoragePlants {
@@ -37,142 +37,124 @@ interface StoragePlants {
     frequency: {
       times: number;
       repeat_every: string;
-    }
+    };
     notificationId: string;
-  }
+  };
 }
 
-
 export function PlantEdit() {
-    const [selectedDateTime, setSelectedDateTime] = useState(new Date);
-    const [showDatePicker, setShowDatePicker] = useState(Platform.OS === "ios");
+  const [selectedDateTime, setSelectedDateTime] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(Platform.OS === 'ios');
 
-    const navigation = useNavigation();
-    const route = useRoute();
-    const { plant } = route.params as Params;
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { plant } = route.params as Params;
 
-    // com evento explicito => (event: Event, dateTime: Date | undefined)
-    const handleChangeTime = useCallback((_, dateTime: Date | undefined) => {
-      if(dateTime){
-        setSelectedDateTime(dateTime);
-      }
-    },[]);
+  // com evento explicito => (event: Event, dateTime: Date | undefined)
+  const handleChangeTime = useCallback((_, dateTime: Date | undefined) => {
+    if (dateTime) {
+      setSelectedDateTime(dateTime);
+    }
+  }, []);
 
-    const handleOpenDateTimePickerForAndroid = useCallback(() => {
-      setShowDatePicker(oldState => !oldState);
-    }, []);
+  const handleOpenDateTimePickerForAndroid = useCallback(() => {
+    setShowDatePicker((oldState) => !oldState);
+  }, []);
 
+  const handleSavePlant = useCallback(async () => {
+    try {
+      const data = await AsyncStorage.getItem('@plantmanager:plants');
+      const plants = data ? (JSON.parse(data) as StoragePlants) : {};
 
-    const handleUpdate = useCallback(async () => {
-      try {
-        const data = await AsyncStorage.getItem('@plantmanager:plants');
-        const plants = data
-        ? JSON.parse(data) as StoragePlants
-        : {};
+      const plantNotificationAt = new Date(plants[plant.id].dateTimeNotification);
 
-        const newTime = new Date(plants[plant.id].dateTimeNotification);
-        newTime.setHours(selectedDateTime.getHours());
-        newTime.setMinutes(selectedDateTime.getMinutes());
-        plants[plant.id].dateTimeNotification = newTime;
+      plantNotificationAt.setHours(selectedDateTime.getHours());
+      plantNotificationAt.setMinutes(selectedDateTime.getMinutes());
 
+      plants[plant.id].dateTimeNotification = plantNotificationAt;
 
-        plants[plant.id].dateTimeNotification = newTime;
-        await AsyncStorage.setItem('@plantmanager:plants', JSON.stringify(plants));
-        navigation.navigate('MyPlants');
+      await AsyncStorage.setItem(
+        '@plantmanager:plants',
+        JSON.stringify(plants)
+      );
 
-      } catch (error) {
-        console.error(error)
-        Alert.alert('Não foi possível atualizar sua plantinha. 😢')
-      }
-    },[selectedDateTime]);
-
-    async function handleRemove(){
-      try {
-        const data = await AsyncStorage.getItem('@plantmanager:plants');
-        const plants = data
-        ? JSON.parse(data) as StoragePlants
-        : {};
-
-        await Notifications.cancelScheduledNotificationAsync(plants[plant.id].notificationId);
-        delete plants[plant.id];
-        await AsyncStorage.setItem('@plantmanager:plants', JSON.stringify(plants));
-
-
-        navigation.navigate('MyPlants');
-      } catch (error) {
-        Alert.alert('Não foi possível remover.');
-      }
-    };
-
-    function handleBack(){
       navigation.navigate('MyPlants');
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Não foi possível atualizar sua plantinha. 😢');
+    }
+  }, [selectedDateTime]);
+
+  function handleBack() {
+    navigation.navigate('MyPlants');
+  }
+
+  useEffect(() => {
+    async function loadData() {
+      const data = await AsyncStorage.getItem('@plantmanager:plants');
+      const plants = data ? (JSON.parse(data) as StoragePlants) : {};
+
+      setSelectedDateTime(new Date(plants[plant.id].dateTimeNotification));
     }
 
-    useEffect(() => {
-      async function loadData(){
-        const data = await AsyncStorage.getItem('@plantmanager:plants');
-        const plants = data
-        ? JSON.parse(data) as StoragePlants
-        : {};
+    loadData();
+  }, []);
 
-        setSelectedDateTime(new Date(plants[plant.id].dateTimeNotification));
-      }
+  return (
+    <ScrollView
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.container}
+    >
+      <View style={styles.plantInfo}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={handleBack}>
+            <MaterialIcons
+              name="chevron-left"
+              size={32}
+              color={colors.green_dark}
+            />
+          </TouchableOpacity>
+        </View>
 
-      loadData();
-    },[]);
+        <Image source={img} style={styles.image} />
+        <Text style={styles.plantName}>{plant.name}</Text>
+        <Text style={styles.plantAbout}>{plant.about}</Text>
+      </View>
 
-    return (
-        <ScrollView
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.container}
-        >
-          <View style={styles.plantInfo}>
-            <View style={styles.header}>
-              <TouchableOpacity onPress={handleBack}>
-                <MaterialIcons name="chevron-left" size={32} color={colors.green_dark} />
-              </TouchableOpacity>
-            </View>
+      <View style={styles.controller}>
+        <View style={styles.tip}>
+          <Image source={waterdrop} style={styles.tipImage} />
+          <Text style={styles.tipText}>{plant.water_tips}</Text>
+        </View>
 
-            <Image source={img} style={styles.image}/>
-            <Text style={styles.plantName}>{plant.name}</Text>
-            <Text style={styles.plantAbout}>{plant.about}</Text>
-          </View>
+        <Text style={styles.alertLabel}>
+          Ecolha o melhor horário para ser lembrado:
+        </Text>
 
-          <View style={styles.controller}>
-            <View style={styles.tip}>
-              <Image source={waterdrop} style={styles.tipImage} />
-              <Text style={styles.tipText}>{plant.water_tips}</Text>
-            </View>
+        {showDatePicker && (
+          <DateTimePicker
+            value={selectedDateTime}
+            mode="time"
+            display="spinner"
+            onChange={handleChangeTime}
+          />
+        )}
 
-            <Text style={styles.alertLabel}>Ecolha o melhor horário para ser lembrado:</Text>
+        {Platform.OS === 'android' && (
+          <TouchableOpacity
+            style={styles.OpenDateTimePickerButton}
+            onPress={handleOpenDateTimePickerForAndroid}
+          >
+            <Text style={styles.OpenDateTimePickerText}>
+              {`Mudar ${format(selectedDateTime, 'HH:mm')}`}
+            </Text>
+          </TouchableOpacity>
+        )}
 
-            {showDatePicker && (
-              <DateTimePicker
-                value={selectedDateTime}
-                mode="time"
-                display="spinner"
-                onChange={handleChangeTime}
-              />)
-            }
-
-            {
-              Platform.OS === "android" &&
-              (
-                <TouchableOpacity
-                  style={styles.OpenDateTimePickerButton}
-                  onPress={handleOpenDateTimePickerForAndroid}
-                >
-                  <Text style={styles.OpenDateTimePickerText}>
-                    {`Mudar ${format(selectedDateTime, "HH:mm")}`}
-                  </Text>
-                </TouchableOpacity>
-              )
-            }
-
-            <Button title="Confirmar alteração" onPress={handleUpdate}/>
-          </View>
-        </ScrollView>
-    );
+        <Button title="Confirmar alteração" onPress={handleSavePlant} />
+      </View>
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -182,7 +164,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.shape,
   },
   header: {
-    width: "100%",
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -205,14 +187,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Jost_600SemiBold',
     fontSize: 24,
     color: colors.heading,
-    marginTop: 15
+    marginTop: 15,
   },
   plantAbout: {
     textAlign: 'center',
     fontFamily: 'Jost_400Regular',
     color: colors.heading,
     fontSize: 14,
-    marginTop: 10
+    marginTop: 10,
   },
   tip: {
     flexDirection: 'row',
@@ -221,7 +203,7 @@ const styles = StyleSheet.create({
   },
   tipImage: {
     width: 50,
-    height: 50
+    height: 50,
   },
   tipText: {
     flex: 1,
@@ -234,16 +216,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Jost_400Regular',
     color: colors.heading,
     fontSize: 12,
-    marginTop: 15
+    marginTop: 15,
   },
   controller: {
     backgroundColor: colors.white,
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: getBottomSpace() || 20
-  },
-  removeButton: {
-    alignSelf: 'center',
+    paddingBottom: getBottomSpace() || 20,
   },
   OpenDateTimePickerButton: {
     width: '100%',
@@ -254,5 +233,5 @@ const styles = StyleSheet.create({
     color: colors.heading,
     fontSize: 24,
     fontFamily: 'Jost_400Regular',
-  }
+  },
 });
