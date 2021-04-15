@@ -76,7 +76,9 @@ export function PlantNew() {
     }
 
     fetchEnvironments();
-    setLoading(false);
+    setInterval(() => {
+      setLoading(false);
+    },3000)
   },[environmentSelected]);
 
 

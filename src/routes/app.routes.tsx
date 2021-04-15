@@ -16,21 +16,21 @@ const AppStack = createStackNavigator();
 
 const AppRoutes: React.FC = () => {
   return(
-    <AppStack.Navigator 
-    headerMode="none"     
+    <AppStack.Navigator
+    headerMode="none"
     screenOptions={{
         cardStyle: {
             backgroundColor: colors.background
         },
     }}
     >
-        <AppStack.Screen name="Welcome" component={Welcome}/>    
-        <AppStack.Screen name="UserIdentification" component={UserIdentification}/>    
-        <AppStack.Screen name="Confirmation" component={Confirmation}/>    
-        <AppStack.Screen name="PlantNew" component={PlantNew}/>            
-        <AppStack.Screen name="PlantSave" component={PlantSave}/>            
-        <AppStack.Screen name="MyPlants" component={AuthRoutes}/>            
-        <AppStack.Screen name="PlantEdit" component={PlantEdit}/>            
+        <AppStack.Screen name="Welcome" component={Welcome}/>
+        <AppStack.Screen name="UserIdentification" component={UserIdentification}/>
+        <AppStack.Screen name="Confirmation" component={Confirmation}/>
+        <AppStack.Screen name="PlantNew" component={PlantNew}/>
+        <AppStack.Screen name="PlantSave" component={PlantSave}/>
+        <AppStack.Screen name="MyPlants" component={AuthRoutes}/>
+        <AppStack.Screen name="PlantEdit" component={PlantEdit}/>
     </AppStack.Navigator>
   )
 };

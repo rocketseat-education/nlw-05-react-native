@@ -19,6 +19,8 @@ import colors from '../styles/colors';
 
 export function UserIdentification(){
   const [name, setName] = useState("");
+  const [isFilled, setIsFilled] = useState(false);
+  const [inputActive, setInputActive] = useState(false);
 
   const navigation = useNavigation();
 
@@ -40,6 +42,15 @@ export function UserIdentification(){
     }
   },[name]);
 
+  const handleInputBlur = useCallback(() => {
+    setInputActive(false);
+    setIsFilled(!!name);
+  },[name]);
+
+  const handleInputFocus = useCallback(() => {
+    setInputActive(true);
+  },[]);
+
     return(
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView
@@ -49,15 +60,26 @@ export function UserIdentification(){
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                     <View style={styles.content}>
                         <View style={styles.form}>
+                            <Text style={styles.emoji}>
+                              {isFilled ? '😄' : '😀'}
+                            </Text>
                             <Text style={styles.title}>
                                 Como podemos {"\n"}
                                 chamar você?
                             </Text>
 
                             <TextInput
-                                style={styles.input}
                                 autoCorrect={false}
+                                placeholder="Digite um nome"
+                                style={[
+                                  styles.input,
+                                  (inputActive || isFilled) && {
+                                    borderBottomColor: colors.green
+                                  }]
+                                }
                                 onChangeText={setName}
+                                onBlur={handleInputBlur}
+                                onFocus={handleInputFocus}
                             />
                         </View>
 
@@ -85,8 +107,12 @@ const styles = StyleSheet.create({
     form: {
         flex: 1,
         justifyContent: 'center',
+        alignItems: 'center',
         width: "100%",
         padding: 30
+    },
+    emoji: {
+      fontSize: 44
     },
     title: {
         fontSize: 32,

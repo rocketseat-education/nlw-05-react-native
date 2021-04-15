@@ -21,7 +21,7 @@ import waterdrop from '../assets/waterdrop.png';
 
 import { PlantData } from './PlantNew';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { MaterialIcons, Feather } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { getBottomSpace } from 'react-native-iphone-x-helper';
 import { format } from 'date-fns/esm';
 
@@ -130,9 +130,6 @@ export function PlantEdit() {
             <View style={styles.header}>
               <TouchableOpacity onPress={handleBack}>
                 <MaterialIcons name="chevron-left" size={32} color={colors.green_dark} />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.removeButton} onPress={handleRemove}>
-                <Feather name="trash" size={24} color={colors.green_dark}/>
               </TouchableOpacity>
             </View>
 

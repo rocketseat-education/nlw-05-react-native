@@ -1,21 +1,29 @@
 import React from 'react';
-import { StyleSheet, ActivityIndicator, ActivityIndicatorProps } from 'react-native';
-import colors from '../styles/colors';
+import { StyleSheet, View } from 'react-native';
+import LottieView from 'lottie-react-native';
 
-type LoadProps = ActivityIndicatorProps;
+import loadAnimation from '../assets/load.json';
 
-export const Load = ({ ...rest }: LoadProps ) => (
-    <ActivityIndicator 
-        color={colors.green_dark}
-        style={styles.load}
-        {...rest}
-    />
+export const Load = () => (
+    <View style={styles.container}>
+      <LottieView
+          loop
+          autoPlay
+          style={styles.animation}
+          source={loadAnimation}
+        />
+    </View>
   );
 
 const styles = StyleSheet.create({
-    load: { 
-        flex: 1, 
-        justifyContent: "center", 
+    container: {
+        flex: 1,
+        justifyContent: "center",
         alignItems: "center"
+    },
+    animation: {
+      backgroundColor: 'transparent',
+      width: 200,
+      height: 200,
     }
 });

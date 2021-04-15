@@ -1,17 +1,22 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/core';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Alert, Image } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import React, { useCallback, useEffect, useState } from 'react';
+import { StyleSheet, View, Text, Alert, Image, FlatList } from 'react-native';
+import { RectButton, TouchableOpacity } from 'react-native-gesture-handler';
+import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
+import * as Notifications from 'expo-notifications';
+
 import { PlantCardSecondary } from '../components/PlantCardSecondary';
 import { Header } from '../components/Header';
-import colors from '../styles/colors';
 import { formatDistance } from 'date-fns';
 import pt from 'date-fns/locale/pt-BR';
 
 
+
+import colors from '../styles/colors';
 import waterdrop from '../assets/waterdrop.png';
 import { Load } from '../components/Load';
+import { Feather } from '@expo/vector-icons';
 
 export interface PlantData {
     id: string;
@@ -38,6 +43,7 @@ interface StoragePlants {
     water_tips: string;
     photo: string;
     dateTimeNotification: Date;
+    notificationId: string;
     frequency: {
       times: number;
       repeat_every: string;
@@ -56,6 +62,41 @@ export function MyPlants() {
   function handleOpen(plant: PlantData){
     navigation.navigate('PlantEdit', { plant });
   }
+
+  const handleRemove = useCallback((data: PlantData) => {
+    const { id } = data;
+
+    Alert.alert(
+      'Remover',
+      `Deseja remover a ${data.name}?`,
+      [
+        {
+          text: "Não 🙏🏼",
+          style: "cancel"
+        },
+        {
+          text: "Sim 🥲",
+          onPress: async () => {
+            try {
+              const data = await AsyncStorage.getItem('@plantmanager:plants');
+              const plants = data
+              ? JSON.parse(data) as StoragePlants
+              : {};
+
+              await Notifications.cancelScheduledNotificationAsync(plants[id].notificationId);
+              delete plants[id];
+              await AsyncStorage.setItem('@plantmanager:plants', JSON.stringify(plants));
+
+              setMyPlants(oldData => oldData.filter(item => item.id !== id));
+            } catch (error) {
+              Alert.alert('Não foi possível remover.');
+            }
+          }
+        }
+      ]
+    );
+
+  },[myplants]);
 
   useEffect(() => {
     async function loadStorageDate(): Promise<void> {
@@ -113,11 +154,15 @@ export function MyPlants() {
 
       setNextWatered(`Não esqueça de regar a ${plantsFormatted[0].name} à ${hours} horas.`);
       setMyPlants(plantsFormatted);
-      setLoading(false);
+
+      setInterval(() => {
+        setLoading(false);
+      },3000);
     }
 
     loadStorageDate();
   },[]);
+
 
 
   if(loading)
@@ -138,12 +183,37 @@ export function MyPlants() {
         <View style={styles.plants}>
           <Text style={styles.plantsTitle}>Próximas regadas</Text>
 
-          <FlatList
+          {/* <FlatList
               data={myplants}
-              renderItem={({ item }) => <PlantCardSecondary name={item.name} day={item.day} hour={item.hour} onPress={() => handleOpen(item)}/>}
+              renderItem={({ item }) => <PlantCardSecondary data={item} onPress={() => handleOpen(item)}/>}
               keyExtractor={item => item.id}
               showsVerticalScrollIndicator={false}
-          />
+          /> */}
+
+          <SwipeListView
+            data={myplants}
+            showsVerticalScrollIndicator={false}
+            renderItem={(data, rowMap) => (
+                <PlantCardSecondary
+                  data={data.item}
+                  onPress={() => handleOpen(data.item)}
+                />
+            )}
+            renderHiddenItem={ (data, rowMap) => (
+                <RectButton
+                  style={styles.buttonRemove}
+                  onPress={() => handleRemove(data.item)}
+                >
+                    <Feather
+                      name="trash"
+                      size={32}
+                      color={colors.white}
+                    />
+                </RectButton>
+            )}
+            disableRightSwipe
+            rightOpenValue={-70}
+        />
         </View>
       </View>
     );
@@ -194,5 +264,15 @@ const styles = StyleSheet.create({
   noPlantsContainerText: {
     fontFamily: 'Jost_400Regular',
     color: colors.heading
-  }
+  },
+  buttonRemove: {
+    backgroundColor: colors.red,
+    height: 85,
+    marginTop: 15,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    paddingRight: 20,
+    marginLeft: 100
+  },
 });
