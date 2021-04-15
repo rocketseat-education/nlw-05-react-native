@@ -155,9 +155,7 @@ export function MyPlants() {
       setNextWatered(`Não esqueça de regar a ${plantsFormatted[0].name} à ${hours} horas.`);
       setMyPlants(plantsFormatted);
 
-      setInterval(() => {
-        setLoading(false);
-      },3000);
+      setLoading(false);
     }
 
     loadStorageDate();

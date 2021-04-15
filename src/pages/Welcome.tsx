@@ -15,24 +15,10 @@ import colors from '../styles/colors';
 
 export function Welcome(){
     const navigation = useNavigation();
-    const lastNotificationResponse = Notifications.useLastNotificationResponse();
 
     function handleStart(){
         navigation.navigate('UserIdentification');
     }
-
-    useEffect(() => {
-      if (
-        lastNotificationResponse &&
-        lastNotificationResponse.notification.request.content.data.plant &&
-        lastNotificationResponse.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
-      ) {
-        navigation.navigate('MyPlants', {
-          plant: lastNotificationResponse.notification.request.content.data.plant
-        });
-      }
-
-    }, [lastNotificationResponse]);
 
     return(
         <SafeAreaView style={styles.container}>

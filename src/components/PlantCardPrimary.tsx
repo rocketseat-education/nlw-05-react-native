@@ -13,7 +13,7 @@ interface PlantProps extends TouchableOpacityProps{
 
 export const PlantCardPrimary = ({ data, ...rest }: PlantProps) => {
     return(
-    <TouchableOpacity style={styles.container} {...rest}> 
+    <TouchableOpacity style={styles.container} {...rest}>
         <Image source={img} style={styles.image} />
         <Text style={styles.text}>{data.name}</Text>
     </TouchableOpacity>
@@ -21,7 +21,7 @@ export const PlantCardPrimary = ({ data, ...rest }: PlantProps) => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: colors.shape,        
+        backgroundColor: colors.shape,
         width: 150,
         height: 150,
         borderRadius: 20,

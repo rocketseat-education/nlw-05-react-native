@@ -76,9 +76,7 @@ export function PlantNew() {
     }
 
     fetchEnvironments();
-    setInterval(() => {
-      setLoading(false);
-    },3000)
+    setLoading(false);
   },[environmentSelected]);
 
 
@@ -131,7 +129,7 @@ export function PlantNew() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background
+    backgroundColor: colors.background,
   },
   title: {
     fontSize: 17,
