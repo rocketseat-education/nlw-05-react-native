@@ -76,7 +76,7 @@ export function PlantSave(){
     return ( 
         <ScrollView
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.container}
+            contentContainerStyle={styles.scrollListContainer}
         >
             <View style={styles.container}>
                 <View style={styles.plantInfo}>
@@ -148,6 +148,11 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         backgroundColor: colors.shape,
     },
+    scrollListContainer: {
+        flexGrow: 1,
+        justifyContent: 'space-between',
+        backgroundColor: colors.shape
+      },
     plantInfo: {
         flex: 1,
         paddingHorizontal: 30,
